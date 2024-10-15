@@ -10,7 +10,7 @@ public class ModClientForge {
     }
 
     static void setup(FMLClientSetupEvent event) {
-        ModClient.init();
+        ModClient.screens();
     }
 
 }

@@ -6,15 +6,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
+import tfar.recipemakergui.menu.FurnaceRecipeMakerMenu;
 
-public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeMakerMenu> {
+public class FurnaceRecipeMakerScreen extends RecipeMakerScreen<FurnaceRecipeMakerMenu> {
 
 
-    public CraftingRecipeMakerScreen(CraftingRecipeMakerMenu $$0, Inventory $$1, Component $$2) {
+    public FurnaceRecipeMakerScreen(FurnaceRecipeMakerMenu $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2);
     }
 
-    private static final ResourceLocation CRAFTING_TABLE_LOCATION = RecipeMakerGUI.id("textures/gui/crafting.png");
+    private static final ResourceLocation CRAFTING_TABLE_LOCATION = RecipeMakerGUI.id("textures/gui/furnace.png");
 
     @Override
     protected void init() {

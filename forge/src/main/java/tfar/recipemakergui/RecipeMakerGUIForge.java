@@ -12,7 +12,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.Pair;
-import tfar.recipemakergui.client.client.ModClientForge;
+import tfar.recipemakergui.client.ModClientForge;
 
 import java.util.HashMap;
 import java.util.List;
