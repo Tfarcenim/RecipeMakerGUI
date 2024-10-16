@@ -134,6 +134,15 @@ public class RecipeMakerGUI {
         return GAME_DIR;
     }
 
+    public static File[] getCustomRecipes() {
+        File recipeDirectory = RecipeMakerGUI.getGameDir().resolve(RECIPE_PATH).toFile();
+        return recipeDirectory.listFiles();
+    }
+
+    public static boolean doesNameExist(String name) {
+        return Files.exists(RecipeMakerGUI.getGameDir().resolve(RECIPE_PATH).resolve(name));
+    }
+
     public static RepositorySource getRepositorySource(PackType type) {
         List<Path> files = new ArrayList<>();
 

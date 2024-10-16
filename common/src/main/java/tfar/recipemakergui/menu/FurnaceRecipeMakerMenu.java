@@ -1,8 +1,10 @@
 package tfar.recipemakergui.menu;
 
+import com.google.gson.JsonObject;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
 import tfar.recipemakergui.init.ModMenuTypes;
 
@@ -16,6 +18,16 @@ public class FurnaceRecipeMakerMenu extends RecipeMakerMenu {
 
     @Override
     protected void saveCurrentRecipe() {
+
+    }
+
+    @Override
+    protected RecipeSerializer<?> getRecipeType() {
+        return RecipeSerializer.SMELTING_RECIPE;
+    }
+
+    @Override
+    protected void serializeRecipeData(JsonObject jsonobject) {
 
     }
 

@@ -1,5 +1,9 @@
 package tfar.recipemakergui.menu;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonWriter;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -9,7 +13,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
+import tfar.recipemakergui.RecipeMakerGUI;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
@@ -69,7 +79,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
                     });
                 }
                 case SAVE -> {
-
+                    saveCurrentRecipe();
                 }
             }
             return true;
@@ -90,4 +100,35 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return true;
     }
+
+    protected abstract RecipeSerializer<?> getRecipeType();
+
+    protected JsonObject serializeRecipe() {
+        JsonObject jsonobject = new JsonObject();
+        jsonobject.addProperty("type", BuiltInRegistries.RECIPE_SERIALIZER.getKey(this.getRecipeType()).toString());
+        this.serializeRecipeData(jsonobject);
+        return jsonobject;
+    }
+
+
+    public static void write(JsonObject object,String fileName) {
+        Gson gson = new Gson();
+        JsonWriter writer = null;
+        try {
+            File file = new File("recipemakergui/data/recipemakergui/recipes/"+fileName+".json");
+            writer = gson.newJsonWriter(new FileWriter(file));
+            writer.setIndent("    ");
+            gson.toJson(object, writer);
+        } catch (Exception e) {
+           // LOGGER.error("Couldn't save config");
+            e.printStackTrace();
+           // throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+
+    protected abstract void serializeRecipeData(JsonObject jsonobject);
+
+
 }

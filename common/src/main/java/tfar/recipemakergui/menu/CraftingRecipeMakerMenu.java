@@ -1,5 +1,10 @@
 package tfar.recipemakergui.menu;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -7,9 +12,16 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
+import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.init.ModMenuTypes;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
@@ -29,7 +41,41 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
 
     @Override
     protected void saveCurrentRecipe() {
+        String name = getNextName();
 
+            JsonObject jsonObject = serializeRecipe();
+            write(jsonObject,name);
+           // ShapelessRecipeBuilder.Result result = new ShapelessRecipeBuilder.Result(name,);
+    }
+
+    @Override
+    protected void serializeRecipeData(JsonObject jsonobject) {
+        ItemStack result = craftingInventory.getItem(0);
+        if (isShapeless()) {
+            List<Ingredient> ingredients = new ArrayList<>();
+            for (int i = 1; i < 10; i++) {
+                ItemStack stack = craftingInventory.getItem(i);
+                if (!stack.isEmpty()) {
+                    ingredients.add(Ingredient.of(stack.getItem()));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected RecipeSerializer<?> getRecipeType() {
+        return isShapeless() ? RecipeSerializer.SHAPELESS_RECIPE:RecipeSerializer.SHAPED_RECIPE;
+    }
+
+    String getNextName() {
+        ItemStack stack = craftingInventory.getItem(0);
+        String defaultName =BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+
+        if (RecipeMakerGUI.doesNameExist(defaultName)) {
+
+        }
+
+        return defaultName;
     }
 
     @Override
