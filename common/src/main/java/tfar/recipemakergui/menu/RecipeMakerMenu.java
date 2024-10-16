@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
-    protected final SimpleContainer craftingInventory;
+    public final SimpleContainer craftingInventory;
 
     protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory,SimpleContainer craftingInventory) {
         super(type, id);
@@ -39,37 +39,47 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        MenuButton menuButton = MenuButton.values()[id];
-        switch (menuButton) {
-            case FURNACE -> {
-                player.openMenu(new MenuProvider() {
-                    @Override
-                    public Component getDisplayName() {
-                        return Component.literal("Furnace");
-                    }
+        if (id >= 0) {
+            GlobalMenuButton globalMenuButton = GlobalMenuButton.values()[id];
+            switch (globalMenuButton) {
+                case FURNACE -> {
+                    player.openMenu(new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.literal("Furnace");
+                        }
 
-                    @Override
-                    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                        return new FurnaceRecipeMakerMenu(i,inventory);
-                    }
-                });
-            }
-            case CRAFTING -> {
-                player.openMenu(new MenuProvider() {
-                    @Override
-                    public Component getDisplayName() {
-                        return Component.literal("Crafting Table");
-                    }
+                        @Override
+                        public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+                            return new FurnaceRecipeMakerMenu(i, inventory);
+                        }
+                    });
+                }
+                case CRAFTING -> {
+                    player.openMenu(new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.literal("Crafting Table");
+                        }
 
-                    @Override
-                    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                        return new CraftingRecipeMakerMenu(i,inventory);
-                    }
-                });
+                        @Override
+                        public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+                            return new CraftingRecipeMakerMenu(i, inventory);
+                        }
+                    });
+                }
+                case SAVE -> {
+
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
+
+    public abstract boolean hasValidInput();
+
+    protected abstract void saveCurrentRecipe();
 
     @Override
     public ItemStack quickMoveStack(Player player, int slot) {

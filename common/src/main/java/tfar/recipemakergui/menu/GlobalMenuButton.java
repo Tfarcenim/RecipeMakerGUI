@@ -1,5 +1,5 @@
 package tfar.recipemakergui.menu;
 
-public enum MenuButton {
+public enum GlobalMenuButton {
     CRAFTING,FURNACE,SAVE;
 }

@@ -1,5 +1,6 @@
 package tfar.recipemakergui.client;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -7,11 +8,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import tfar.recipemakergui.menu.MenuButton;
+import tfar.recipemakergui.menu.GlobalMenuButton;
 import tfar.recipemakergui.menu.RecipeMakerMenu;
 
 import java.util.HashMap;
@@ -48,15 +48,27 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
-    protected void sendButtonToServer(MenuButton action) {
+    @Override
+    protected void renderTooltip(GuiGraphics guiGraphics, int $$1, int $$2) {
+        super.renderTooltip(guiGraphics, $$1, $$2);
+        if (save != null && save.isHovered()) {
+            if (menu.craftingInventory.getItem(0).isEmpty()) {
+                guiGraphics.renderTooltip(this.font, Component.literal("Missing output").withStyle(ChatFormatting.RED), $$1, $$2);
+            } else if (!menu.hasValidInput()) {
+                guiGraphics.renderTooltip(this.font, Component.literal("Missing input(s)").withStyle(ChatFormatting.RED), $$1, $$2);
+            }
+        }
+    }
+
+    protected void sendGlobalButtonToServer(GlobalMenuButton action) {
         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, action.ordinal());
     }
 
-    static final Map<Item,MenuButton> map = new HashMap<>();
+    static final Map<Item, GlobalMenuButton> map = new HashMap<>();
 
     static {
-        map.put(Items.CRAFTING_TABLE,MenuButton.CRAFTING);
-        map.put(Items.FURNACE,MenuButton.FURNACE);
+        map.put(Items.CRAFTING_TABLE, GlobalMenuButton.CRAFTING);
+        map.put(Items.FURNACE, GlobalMenuButton.FURNACE);
     }
 
     protected class DetailsList extends ObjectSelectionList<DetailsList.Entry> {
@@ -64,7 +76,7 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
         public DetailsList(int yPos, int height) {
             super(RecipeMakerScreen.this.minecraft, 24, imageHeight, topPos +yPos,topPos +yPos + height, 18);
 
-            for (Map.Entry<Item, MenuButton> predicate : map.entrySet()) {
+            for (Map.Entry<Item, GlobalMenuButton> predicate : map.entrySet()) {
                 Item s = predicate.getKey();
                     this.addEntry(new Entry(s.getDefaultInstance(),predicate.getValue()));
             }
@@ -87,9 +99,9 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
 
         protected class Entry extends ObjectSelectionList.Entry<Entry> {
             private final ItemStack stacks;
-            private final MenuButton button;
+            private final GlobalMenuButton button;
 
-            public Entry(ItemStack stacks,MenuButton button) {
+            public Entry(ItemStack stacks, GlobalMenuButton button) {
                 this.stacks = stacks;
                 this.button = button;
             }
@@ -109,7 +121,7 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
             public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
                 if (pButton == 0) {
                     DetailsList.this.setSelected(this);
-                    sendButtonToServer(button);
+                    sendGlobalButtonToServer(button);
                     return true;
                 } else {
                     return false;
@@ -117,4 +129,15 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
             }
         }
     }
+
+    protected void trySave() {
+        if (menu.craftingInventory.getItem(0).isEmpty()) {
+            return;
+        }
+        if (!menu.hasValidInput()) {
+            return;
+        }
+        sendGlobalButtonToServer(GlobalMenuButton.SAVE);
+    }
+
 }
