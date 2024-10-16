@@ -9,18 +9,28 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tfar.recipemakergui.init.ModMenuTypes;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
 import tfar.recipemakergui.platform.Services;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // This class is part of the common project meaning it is shared between all supported loaders. Code written here can only
 // import and access the vanilla codebase, libraries used by vanilla, and optionally third party libraries that provide
@@ -73,6 +83,74 @@ public class RecipeMakerGUI {
 
     public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID,path);
+    }
+
+
+
+    public static Path GAME_DIR;
+
+    static{
+        GAME_DIR = Path.of(".");
+
+        String launchArgument = System.getProperty("sun.java.command");
+
+//		System.out.println(launchArgument);
+
+        if(launchArgument == null){
+            LOG.warn("Unable to find launch arguments, the mod might not function as expected.");
+        }else if(launchArgument.contains("gameDir")){
+            Pattern pattern = Pattern.compile("gameDir\\s(.+?)(?:\\s--|$)");
+            Matcher matcher = pattern.matcher(launchArgument);
+            if(!matcher.find()){
+                LOG.error("Unable to find gameDir in launch arguments '{}' even though it was specified", "--reducted--");
+            }else{
+                String gameDirParam = matcher.group(1);
+                GAME_DIR = Path.of(gameDirParam);
+            }
+        }
+
+        setup();
+    }
+
+    public static final String LOCATION = "recipemakergui/";
+    public static final String RECIPE_PATH = "/recipemakergui/data/recipemakergui/recipes";
+
+    public static void setup() {
+        if(Files.notExists(RecipeMakerGUI.getGameDir().resolve("recipemakergui").resolve("data")
+                .resolve(RecipeMakerGUI.MOD_ID).resolve("recipes").resolve("pack.mcmeta"))){
+            try {
+                //create folders
+                Files.createDirectories(new File(RecipeMakerGUI.getGameDir().toFile(), RECIPE_PATH).toPath());
+                //create pack.mcmeta
+                URL url = PackConfig.class.getClassLoader().getResource("pack.mcmeta");
+                Files.copy(url.openStream(),RecipeMakerGUI.getGameDir().resolve("recipemakergui").resolve("pack.mcmeta"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Path getGameDir() {
+        return GAME_DIR;
+    }
+
+    public static RepositorySource getRepositorySource(PackType type) {
+        List<Path> files = new ArrayList<>();
+
+     /*   List<String> packFolders = switch (type){
+            case SERVER_DATA -> PackConfig.getRequiredDatapacks();
+            default -> null;
+        };*/
+
+        files.add(GAME_DIR.resolve(Path.of(LOCATION)));
+
+     /*   for (String packFolder : packFolders) {
+            Path str = Path.of(packFolder);
+            Path resolve = GAME_DIR.resolve(str);
+            files.add(resolve);
+        }*/
+
+        return new GlobalPackFinder(type,  files);
     }
 
 }

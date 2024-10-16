@@ -2,6 +2,7 @@ package tfar.recipemakergui.menu;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -12,10 +13,16 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
-    protected RecipeMakerMenu(@Nullable MenuType<?> $$0, int $$1, Inventory inventory) {
-        super($$0, $$1);
+    protected final SimpleContainer craftingInventory;
+
+    protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory,SimpleContainer craftingInventory) {
+        super(type, id);
+        this.craftingInventory = craftingInventory;
+        addCraftingInventory(craftingInventory);
+        addPlayerInventory(inventory,0);
     }
 
+    protected abstract void addCraftingInventory(SimpleContainer craftingInventory);
 
     protected void addPlayerInventory(Inventory inventory,int yPos) {
         int i;
@@ -65,7 +72,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int i) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         return ItemStack.EMPTY;
     }
 

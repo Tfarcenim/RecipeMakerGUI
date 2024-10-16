@@ -1,11 +1,13 @@
 package tfar.recipemakergui.client;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
+import tfar.recipemakergui.menu.MenuButton;
 
 public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeMakerMenu> {
 
@@ -19,6 +21,11 @@ public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeM
     @Override
     protected void init() {
         super.init();
+        save = Button.builder(Component.literal("Save"), button -> sendButtonToServer(MenuButton.SAVE))
+                .size(30,18)
+                .pos(leftPos + 116,topPos + 62)
+                .build();
+        addRenderableWidget(save);
     }
 
     @Override

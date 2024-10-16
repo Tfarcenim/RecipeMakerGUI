@@ -1,11 +1,13 @@
 package tfar.recipemakergui.client;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -18,6 +20,7 @@ import java.util.Map;
 public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends AbstractContainerScreen<RMM> {
     private DetailsList list;
 
+    protected Button save;
 
     public RecipeMakerScreen(RMM $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2);
@@ -36,7 +39,6 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
         list.setRenderTopAndBottom(false);
         this.addRenderableWidget(this.list);
     }
-
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
