@@ -3,8 +3,6 @@ package tfar.recipemakergui.menu;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.init.ModMenuTypes;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -29,23 +26,21 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
     private final ContainerData data;
 
     public CraftingRecipeMakerMenu(@Nullable MenuType<?> $$0, int $$1, Inventory inventory) {
-        super($$0, $$1,inventory,new SimpleContainer(10));
-        data = new SimpleContainerData(1);
+        super($$0, $$1, inventory, new SimpleContainer(10));
+        data = new SimpleContainerData(2);
         addDataSlots(data);
     }
 
 
     public CraftingRecipeMakerMenu(int id, Inventory inventory) {
-        this(ModMenuTypes.CRAFTING_RECIPE_MAKER,id, inventory);
+        this(ModMenuTypes.CRAFTING_RECIPE_MAKER, id, inventory);
     }
 
     @Override
     protected void saveCurrentRecipe() {
         String name = getNextName();
-
-            JsonObject jsonObject = serializeRecipe();
-            write(jsonObject,name);
-           // ShapelessRecipeBuilder.Result result = new ShapelessRecipeBuilder.Result(name,);
+        JsonObject jsonObject = serializeRecipe();
+        write(jsonObject, name);
     }
 
     @Override
@@ -59,20 +54,37 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
                     ingredients.add(Ingredient.of(stack.getItem()));
                 }
             }
+
+            JsonArray jsonarray = new JsonArray();
+            for(Ingredient ingredient : ingredients) {
+                jsonarray.add(ingredient.toJson());
+            }
+            jsonobject.add("ingredients", jsonarray);
+        } else {
         }
+
+        JsonObject resultObj = serializeItemStack(result,saveNBT());
+        jsonobject.add("result", resultObj);
     }
 
     @Override
     protected RecipeSerializer<?> getRecipeType() {
-        return isShapeless() ? RecipeSerializer.SHAPELESS_RECIPE:RecipeSerializer.SHAPED_RECIPE;
+        return isShapeless() ? RecipeSerializer.SHAPELESS_RECIPE : RecipeSerializer.SHAPED_RECIPE;
     }
 
     String getNextName() {
         ItemStack stack = craftingInventory.getItem(0);
-        String defaultName =BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+        String defaultName = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
 
         if (RecipeMakerGUI.doesNameExist(defaultName)) {
-
+            int i = 0;
+            while (true) {
+                i++;
+                String dupName = defaultName+"_"+i;
+                if (!RecipeMakerGUI.doesNameExist(dupName)) {
+                    return dupName;
+                }
+            }
         }
 
         return defaultName;
@@ -80,7 +92,7 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
 
     @Override
     public boolean hasValidInput() {
-        return !IntStream.range(1,10).allMatch(i -> craftingInventory.getItem(i).isEmpty());
+        return !IntStream.range(1, 10).allMatch(i -> craftingInventory.getItem(i).isEmpty());
     }
 
     @Override
@@ -88,10 +100,9 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
         if (id < 0) {
             int ordinal = -(id + 1);
             CraftingMenuButton craftingMenuButton = CraftingMenuButton.values()[ordinal];
-            switch (craftingMenuButton){
-                case TOGGLE_SHAPELESS -> {
-                    data.set(0,1 - data.get(0));
-                }
+            switch (craftingMenuButton) {
+                case TOGGLE_SHAPELESS -> data.set(0, 1 - data.get(0));
+                case TOGGLE_NBT_SAVE -> data.set(1,1-data.get(1));
             }
             return true;
         } else {
@@ -103,13 +114,17 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
         return data.get(0) > 0;
     }
 
+    public boolean saveNBT() {
+        return data.get(1) > 0;
+    }
+
     @Override
     protected void addCraftingInventory(SimpleContainer craftingInventory) {
         this.addSlot(new Slot(craftingInventory, 0, 124, 35));
 
-        for(int i = 0; i < 3; ++i) {
-            for(int j = 0; j < 3; ++j) {
-                this.addSlot(new Slot(craftingInventory, j + i * 3 +1, 30 + j * 18, 17 + i * 18));
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                this.addSlot(new Slot(craftingInventory, j + i * 3 + 1, 30 + j * 18, 17 + i * 18));
             }
         }
     }

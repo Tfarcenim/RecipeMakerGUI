@@ -140,7 +140,8 @@ public class RecipeMakerGUI {
     }
 
     public static boolean doesNameExist(String name) {
-        return Files.exists(RecipeMakerGUI.getGameDir().resolve(RECIPE_PATH).resolve(name));
+        File file = new File("recipemakergui/data/recipemakergui/recipes/"+name+".json");
+        return file.exists();
     }
 
     public static RepositorySource getRepositorySource(PackType type) {

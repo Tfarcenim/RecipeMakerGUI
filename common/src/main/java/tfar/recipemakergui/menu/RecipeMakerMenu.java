@@ -110,6 +110,18 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         return jsonobject;
     }
 
+    public static JsonObject serializeItemStack(ItemStack stack,boolean saveNBT) {
+        JsonObject resultObj = new JsonObject();
+        resultObj.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        if (stack.getCount() > 1) {
+            resultObj.addProperty("count", stack.getCount());
+        }
+        if (stack.hasTag() && saveNBT) {
+            resultObj.addProperty("nbt", stack.getTag().toString());
+        }
+        return resultObj;
+    }
+
 
     public static void write(JsonObject object,String fileName) {
         Gson gson = new Gson();
@@ -120,9 +132,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
             writer.setIndent("    ");
             gson.toJson(object, writer);
         } catch (Exception e) {
-           // LOGGER.error("Couldn't save config");
             e.printStackTrace();
-           // throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(writer);
         }

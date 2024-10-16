@@ -2,7 +2,6 @@ package tfar.recipemakergui.client;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,12 +28,19 @@ public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeM
                 .build();
         addRenderableWidget(save);
 
-        SmallXButton checkbox = new SmallXButton(leftPos+159,topPos+6,12,12,Component.literal("x"),button -> {
+        SmallXButton toggleShapeless = new SmallXButton(leftPos+159,topPos+6,12,12,Component.literal("x"),button -> {
             sendButtonToServer(CraftingMenuButton.TOGGLE_SHAPELESS);
         }, menu.isShapeless());
 
-        checkbox.setTooltip(Tooltip.create(Component.literal("Shapeless")));
-        addRenderableWidget(checkbox);
+        toggleShapeless.setTooltip(Tooltip.create(Component.literal("Shapeless")));
+        addRenderableWidget(toggleShapeless);
+
+        SmallXButton outputNBT = new SmallXButton(leftPos+159,topPos+20,12,12,Component.literal("x"),button -> {
+            sendButtonToServer(CraftingMenuButton.TOGGLE_SHAPELESS);
+        }, menu.saveNBT());
+        outputNBT.setTooltip(Tooltip.create(Component.literal("Save Output NBT")));
+
+        addRenderableWidget(outputNBT);
     }
 
     @Override
