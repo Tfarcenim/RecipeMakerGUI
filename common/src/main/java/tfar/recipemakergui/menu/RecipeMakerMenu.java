@@ -10,6 +10,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -24,12 +25,15 @@ import java.io.FileWriter;
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
     public final SimpleContainer craftingInventory;
+    protected final ContainerData data;
 
-    protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory,SimpleContainer craftingInventory) {
+    protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory,SimpleContainer craftingInventory,ContainerData data) {
         super(type, id);
         this.craftingInventory = craftingInventory;
         addCraftingInventory(craftingInventory);
         addPlayerInventory(inventory,0);
+        this.data = data;
+        addDataSlots(data);
     }
 
     protected abstract void addCraftingInventory(SimpleContainer craftingInventory);
@@ -61,7 +65,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
                         @Override
                         public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                            return new FurnaceRecipeMakerMenu(i, inventory);
+                            return new CookingRecipeMakerMenu(i, inventory);
                         }
                     });
                 }
@@ -89,7 +93,30 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
     public abstract boolean hasValidInput();
 
-    protected abstract void saveCurrentRecipe();
+    protected void saveCurrentRecipe() {
+        String name = createName();
+        JsonObject jsonObject = serializeRecipe();
+        write(jsonObject, name);
+    }
+
+    protected String createName() {
+        ItemStack stack = craftingInventory.getItem(0);
+        String defaultName = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+
+        if (RecipeMakerGUI.doesNameExist(defaultName)) {
+            int i = 0;
+            while (true) {
+                i++;
+                String dupName = defaultName+"_"+i;
+                if (!RecipeMakerGUI.doesNameExist(dupName)) {
+                    return dupName;
+                }
+            }
+        }
+        return defaultName;
+    }
+
+
 
     @Override
     public ItemStack quickMoveStack(Player player, int slot) {
@@ -122,6 +149,13 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         return resultObj;
     }
 
+    public void setServerSideDataValue(int index,short value) {
+        data.set(index,value);
+    }
+
+    public void setServerSideDoubleValue(double value) {
+
+    }
 
     public static void write(JsonObject object,String fileName) {
         Gson gson = new Gson();

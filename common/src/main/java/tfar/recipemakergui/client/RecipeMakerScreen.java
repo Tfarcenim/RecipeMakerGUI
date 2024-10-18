@@ -45,19 +45,23 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
         this.renderBackground(pGuiGraphics);
         this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderFg(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     @Override
-    protected void renderTooltip(GuiGraphics guiGraphics, int $$1, int $$2) {
-        super.renderTooltip(guiGraphics, $$1, $$2);
+    protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderTooltip(guiGraphics, mouseX, mouseY);
         if (save != null && save.isHovered()) {
             if (menu.craftingInventory.getItem(0).isEmpty()) {
-                guiGraphics.renderTooltip(this.font, Component.literal("Missing output").withStyle(ChatFormatting.RED), $$1, $$2);
+                guiGraphics.renderTooltip(this.font, Component.literal("Missing output").withStyle(ChatFormatting.RED), mouseX, mouseY);
             } else if (!menu.hasValidInput()) {
-                guiGraphics.renderTooltip(this.font, Component.literal("Missing input(s)").withStyle(ChatFormatting.RED), $$1, $$2);
+                guiGraphics.renderTooltip(this.font, Component.literal("Missing input(s)").withStyle(ChatFormatting.RED), mouseX, mouseY);
             }
         }
+    }
+
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
     }
 
     protected void sendGlobalButtonToServer(GlobalMenuButton action) {

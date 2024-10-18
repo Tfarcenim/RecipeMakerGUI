@@ -2,11 +2,9 @@ package tfar.recipemakergui.menu;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
@@ -15,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
-import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.init.ModMenuTypes;
 
 import java.util.*;
@@ -23,24 +20,13 @@ import java.util.stream.IntStream;
 
 public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
 
-    private final ContainerData data;
-
     public CraftingRecipeMakerMenu(@Nullable MenuType<?> $$0, int $$1, Inventory inventory) {
-        super($$0, $$1, inventory, new SimpleContainer(10));
-        data = new SimpleContainerData(2);
-        addDataSlots(data);
+        super($$0, $$1, inventory, new SimpleContainer(10),new SimpleContainerData(2));
     }
 
 
     public CraftingRecipeMakerMenu(int id, Inventory inventory) {
         this(ModMenuTypes.CRAFTING_RECIPE_MAKER, id, inventory);
-    }
-
-    @Override
-    protected void saveCurrentRecipe() {
-        String name = getNextName();
-        JsonObject jsonObject = serializeRecipe();
-        write(jsonObject, name);
     }
 
     final String pattern = "abcdefghi";
@@ -128,23 +114,6 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
         return isShapeless() ? RecipeSerializer.SHAPELESS_RECIPE : RecipeSerializer.SHAPED_RECIPE;
     }
 
-    String getNextName() {
-        ItemStack stack = craftingInventory.getItem(0);
-        String defaultName = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
-
-        if (RecipeMakerGUI.doesNameExist(defaultName)) {
-            int i = 0;
-            while (true) {
-                i++;
-                String dupName = defaultName+"_"+i;
-                if (!RecipeMakerGUI.doesNameExist(dupName)) {
-                    return dupName;
-                }
-            }
-        }
-
-        return defaultName;
-    }
 
     @Override
     public boolean hasValidInput() {

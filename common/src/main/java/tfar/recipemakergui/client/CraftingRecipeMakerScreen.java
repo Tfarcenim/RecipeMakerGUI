@@ -36,19 +36,11 @@ public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeM
         addRenderableWidget(toggleShapeless);
 
         SmallXButton outputNBT = new SmallXButton(leftPos+159,topPos+20,12,12,Component.literal("x"),button -> {
-            sendButtonToServer(CraftingMenuButton.TOGGLE_SHAPELESS);
+            sendButtonToServer(CraftingMenuButton.TOGGLE_NBT_SAVE);
         }, menu.saveNBT());
         outputNBT.setTooltip(Tooltip.create(Component.literal("Save Output NBT")));
 
         addRenderableWidget(outputNBT);
-    }
-
-    @Override
-    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics);
-        this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     @Override

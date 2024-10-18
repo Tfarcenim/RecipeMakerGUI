@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tfar.recipemakergui.init.ModMenuTypes;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
+import tfar.recipemakergui.network.PacketHandler;
 import tfar.recipemakergui.platform.Services;
 
 import java.io.File;
@@ -47,8 +48,9 @@ public class RecipeMakerGUI {
     // code that gets invoked by the entry point of the loader specific projects.
     public static void init() {
 
-        Services.PLATFORM.registerAll(ModMenuTypes.class, BuiltInRegistries.MENU, (Class<MenuType<?>>) (Object)MenuType.class);
+        Services.PLATFORM.registerAll(ModMenuTypes.class, BuiltInRegistries.MENU, (Class<MenuType<?>>) (Object) MenuType.class);
 
+        PacketHandler.registerPackets();
 
         // It is common for all supported loaders to provide a similar feature that can not be used directly in the
         // common code. A popular way to get around this is using Java's built-in service loader feature to create
@@ -75,35 +77,34 @@ public class RecipeMakerGUI {
 
             @Override
             public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                return new CraftingRecipeMakerMenu(i,inventory);
+                return new CraftingRecipeMakerMenu(i, inventory);
             }
         });
         return 1;
     }
 
     public static ResourceLocation id(String path) {
-        return new ResourceLocation(MOD_ID,path);
+        return new ResourceLocation(MOD_ID, path);
     }
-
 
 
     public static Path GAME_DIR;
 
-    static{
+    static {
         GAME_DIR = Path.of(".");
 
         String launchArgument = System.getProperty("sun.java.command");
 
 //		System.out.println(launchArgument);
 
-        if(launchArgument == null){
+        if (launchArgument == null) {
             LOG.warn("Unable to find launch arguments, the mod might not function as expected.");
-        }else if(launchArgument.contains("gameDir")){
+        } else if (launchArgument.contains("gameDir")) {
             Pattern pattern = Pattern.compile("gameDir\\s(.+?)(?:\\s--|$)");
             Matcher matcher = pattern.matcher(launchArgument);
-            if(!matcher.find()){
+            if (!matcher.find()) {
                 LOG.error("Unable to find gameDir in launch arguments '{}' even though it was specified", "--reducted--");
-            }else{
+            } else {
                 String gameDirParam = matcher.group(1);
                 GAME_DIR = Path.of(gameDirParam);
             }
@@ -115,15 +116,16 @@ public class RecipeMakerGUI {
     public static final String LOCATION = "recipemakergui/";
     public static final String RECIPE_PATH = "/recipemakergui/data/recipemakergui/recipes";
 
+
     public static void setup() {
-        if(Files.notExists(RecipeMakerGUI.getGameDir().resolve("recipemakergui").resolve("data")
-                .resolve(RecipeMakerGUI.MOD_ID).resolve("recipes").resolve("pack.mcmeta"))){
+        final Path PACK_MCMETA = RecipeMakerGUI.getGameDir().resolve("recipemakergui").resolve("pack.mcmeta");
+        if (Files.notExists(PACK_MCMETA)) {
             try {
                 //create folders
                 Files.createDirectories(new File(RecipeMakerGUI.getGameDir().toFile(), RECIPE_PATH).toPath());
                 //create pack.mcmeta
                 URL url = PackConfig.class.getClassLoader().getResource("pack.mcmeta");
-                Files.copy(url.openStream(),RecipeMakerGUI.getGameDir().resolve("recipemakergui").resolve("pack.mcmeta"));
+                Files.copy(url.openStream(), PACK_MCMETA);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -140,7 +142,7 @@ public class RecipeMakerGUI {
     }
 
     public static boolean doesNameExist(String name) {
-        File file = new File("recipemakergui/data/recipemakergui/recipes/"+name+".json");
+        File file = new File("recipemakergui/data/recipemakergui/recipes/" + name + ".json");
         return file.exists();
     }
 
@@ -160,7 +162,7 @@ public class RecipeMakerGUI {
             files.add(resolve);
         }*/
 
-        return new GlobalPackFinder(type,  files);
+        return new GlobalPackFinder(type, files);
     }
 
 }
