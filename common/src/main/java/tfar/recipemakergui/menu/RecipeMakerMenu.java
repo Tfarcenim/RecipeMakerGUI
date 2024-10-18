@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -64,6 +65,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
             } else {
                 switch (globalMenuButton) {
                     case SAVE -> saveCurrentRecipe();
+                    case TOGGLE_NBT_SAVE -> data.set(DATA_SAVE_NBT,1-data.get(DATA_SAVE_NBT));
                 }
             }
             return true;
@@ -98,9 +100,52 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slot) {
-        return ItemStack.EMPTY;
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+        int craftingSlots = getCraftingSlots();
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
+            itemstack = itemstack1.copy();
+            if (pIndex < craftingSlots) {
+                if (!this.moveItemStackTo(itemstack1, craftingSlots, craftingSlots + 36, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(itemstack1, 0, craftingSlots, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            if (itemstack1.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(pPlayer, itemstack1);
+        }
+
+        return itemstack;
     }
+
+    int getCraftingSlots() {
+        return craftingInventory.getContainerSize();
+    }
+
+    /**
+     * Called when the container is closed.
+     */
+    @Override
+    public void removed(Player pPlayer) {
+        super.removed(pPlayer);
+        if (pPlayer instanceof ServerPlayer) {
+            clearContainer(pPlayer,craftingInventory);
+        }
+    }
+
 
     @Override
     public boolean stillValid(Player player) {

@@ -11,6 +11,7 @@ public enum GlobalMenuButton {
     SMOKING(Items.SMOKER,CookingRecipeMakerMenu::smoking),
     CAMPFIRE(Items.CAMPFIRE,CookingRecipeMakerMenu::campfire),
     STONECUTTER(Items.STONECUTTER,StonecuttingRecipeMakerMenu::client),
+    SMITHING_TRANSFORM(Items.SMITHING_TABLE,SmithingRecipeMakerMenu::client),
     TOGGLE_NBT_SAVE,
     SAVE;
     public final Item item;

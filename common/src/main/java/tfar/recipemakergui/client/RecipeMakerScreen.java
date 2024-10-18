@@ -17,8 +17,8 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
 
     protected Button save;
 
-    public RecipeMakerScreen(RMM $$0, Inventory $$1, Component $$2) {
-        super($$0, $$1, $$2);
+    public RecipeMakerScreen(RMM rmm, Inventory inventory, Component title) {
+        super(rmm, inventory, title);
     }
 
     @Override

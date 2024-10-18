@@ -9,5 +9,6 @@ public class ModClient {
         MenuScreens.register(ModMenuTypes.CRAFTING_RECIPE_MAKER,CraftingRecipeMakerScreen::new);
         MenuScreens.register(ModMenuTypes.COOKING_RECIPE_MAKER, AbstractCookingRecipeMakerScreen::new);
         MenuScreens.register(ModMenuTypes.STONECUTTER_RECIPE_MAKER,StonecuttingRecipeMakerScreen::new);
+        MenuScreens.register(ModMenuTypes.SMITHING_RECIPE_MAKER,SmithingRecipeMakerScreen::new);
     }
 }
