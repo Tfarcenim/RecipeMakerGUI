@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import tfar.recipemakergui.RecipeMakerGUI;
-import tfar.recipemakergui.menu.CookingMenuButton;
 import tfar.recipemakergui.menu.CookingRecipeMakerMenu;
+import tfar.recipemakergui.menu.GlobalMenuButton;
 import tfar.recipemakergui.network.server.C2SSetDataValuePacket;
 import tfar.recipemakergui.network.server.C2SSetDoubleValuePacket;
 import tfar.recipemakergui.platform.Services;
@@ -37,7 +37,7 @@ public class AbstractCookingRecipeMakerScreen extends RecipeMakerScreen<CookingR
         addRenderableWidget(save);
 
         SmallXButton outputNBT = new SmallXButton(leftPos+159,topPos+20,12,12,Component.literal("x"),button -> {
-            sendButtonToServer(CookingMenuButton.TOGGLE_NBT_SAVE);
+            sendGlobalButtonToServer(GlobalMenuButton.TOGGLE_NBT_SAVE);
         }, menu.saveNBT());
         outputNBT.setTooltip(Tooltip.create(Component.literal("Save Output NBT")));
 
@@ -122,11 +122,6 @@ public class AbstractCookingRecipeMakerScreen extends RecipeMakerScreen<CookingR
         int i = this.leftPos;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(CRAFTING_TABLE_LOCATION, i, j, 0, 0, this.imageWidth, this.imageHeight);
-    }
-
-    protected void sendButtonToServer(CookingMenuButton action) {
-        this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,-(action.ordinal()+1));
-        //negate and subtract one to avoid interference with global values
     }
 
 }

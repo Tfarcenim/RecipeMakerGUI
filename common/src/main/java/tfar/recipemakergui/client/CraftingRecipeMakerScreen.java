@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 import tfar.recipemakergui.RecipeMakerGUI;
 import tfar.recipemakergui.menu.CraftingMenuButton;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
+import tfar.recipemakergui.menu.GlobalMenuButton;
 
 public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeMakerMenu> {
 
@@ -36,7 +37,7 @@ public class CraftingRecipeMakerScreen extends RecipeMakerScreen<CraftingRecipeM
         addRenderableWidget(toggleShapeless);
 
         SmallXButton outputNBT = new SmallXButton(leftPos+159,topPos+20,12,12,Component.literal("x"),button -> {
-            sendButtonToServer(CraftingMenuButton.TOGGLE_NBT_SAVE);
+            sendGlobalButtonToServer(GlobalMenuButton.TOGGLE_NBT_SAVE);
         }, menu.saveNBT());
         outputNBT.setTooltip(Tooltip.create(Component.literal("Save Output NBT")));
 

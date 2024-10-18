@@ -10,7 +10,8 @@ public enum GlobalMenuButton {
     BLASTING(Items.BLAST_FURNACE,CookingRecipeMakerMenu::blasting),
     SMOKING(Items.SMOKER,CookingRecipeMakerMenu::smoking),
     CAMPFIRE(Items.CAMPFIRE,CookingRecipeMakerMenu::campfire),
-
+    STONECUTTER(Items.STONECUTTER,StonecuttingRecipeMakerMenu::client),
+    TOGGLE_NBT_SAVE,
     SAVE;
     public final Item item;
     public final MenuType.MenuSupplier<?> supplier;

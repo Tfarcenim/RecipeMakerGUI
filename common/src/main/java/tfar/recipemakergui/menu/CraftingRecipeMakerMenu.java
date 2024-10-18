@@ -20,6 +20,8 @@ import java.util.stream.IntStream;
 
 public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
 
+    public static final int DATA_SHAPELESS = 1;
+
     public CraftingRecipeMakerMenu(@Nullable MenuType<?> $$0, int $$1, Inventory inventory) {
         super($$0, $$1, inventory, new SimpleContainer(10),new SimpleContainerData(2));
     }
@@ -126,8 +128,7 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
             int ordinal = -(id + 1);
             CraftingMenuButton craftingMenuButton = CraftingMenuButton.values()[ordinal];
             switch (craftingMenuButton) {
-                case TOGGLE_SHAPELESS -> data.set(0, 1 - data.get(0));
-                case TOGGLE_NBT_SAVE -> data.set(1,1-data.get(1));
+                case TOGGLE_SHAPELESS -> data.set(DATA_SHAPELESS, 1 - data.get(DATA_SHAPELESS));
             }
             return true;
         } else {
@@ -136,11 +137,7 @@ public class CraftingRecipeMakerMenu extends RecipeMakerMenu {
     }
 
     public boolean isShapeless() {
-        return data.get(0) > 0;
-    }
-
-    public boolean saveNBT() {
-        return data.get(1) > 0;
+        return data.get(DATA_SHAPELESS) > 0;
     }
 
     @Override

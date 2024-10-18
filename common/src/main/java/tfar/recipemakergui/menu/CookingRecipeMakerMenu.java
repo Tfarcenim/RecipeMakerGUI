@@ -3,7 +3,6 @@ package tfar.recipemakergui.menu;
 import com.google.gson.JsonObject;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
@@ -15,8 +14,7 @@ import tfar.recipemakergui.init.ModMenuTypes;
 
 public class CookingRecipeMakerMenu extends RecipeMakerMenu {
 
-    public static final int DATA_COOKTIME = 0;
-    public static final int DATA_SAVE_NBT = 1;
+    public static final int DATA_COOKTIME = 1;
     private final RecipeSerializer<?> serializer;
 
     protected double xp;
@@ -27,23 +25,23 @@ public class CookingRecipeMakerMenu extends RecipeMakerMenu {
     }
 
     public static CookingRecipeMakerMenu smelting(int id, Inventory inventory) {
-        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER_MENU,id,inventory,RecipeSerializer.SMELTING_RECIPE);
+        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER,id,inventory,RecipeSerializer.SMELTING_RECIPE);
     }
 
     public static CookingRecipeMakerMenu blasting(int id, Inventory inventory) {
-        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER_MENU,id,inventory,RecipeSerializer.BLASTING_RECIPE);
+        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER,id,inventory,RecipeSerializer.BLASTING_RECIPE);
     }
 
     public static CookingRecipeMakerMenu smoking(int id, Inventory inventory) {
-        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER_MENU,id,inventory,RecipeSerializer.SMOKING_RECIPE);
+        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER,id,inventory,RecipeSerializer.SMOKING_RECIPE);
     }
 
     public static CookingRecipeMakerMenu campfire(int id, Inventory inventory) {
-        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER_MENU,id,inventory,RecipeSerializer.CAMPFIRE_COOKING_RECIPE);
+        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER,id,inventory,RecipeSerializer.CAMPFIRE_COOKING_RECIPE);
     }
 
     public static CookingRecipeMakerMenu client(int id, Inventory inventory) {
-        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER_MENU,id,inventory,null);
+        return new CookingRecipeMakerMenu(ModMenuTypes.COOKING_RECIPE_MAKER,id,inventory,null);
     }
 
     @Override
@@ -60,24 +58,6 @@ public class CookingRecipeMakerMenu extends RecipeMakerMenu {
         int cookingTime = getCookingTime();
         jsonobject.addProperty("cookingtime", cookingTime > 0 ? cookingTime : 200);
         jsonobject.add("result",serializeItemStack(result,saveNBT()));
-    }
-
-    @Override
-    public boolean clickMenuButton(Player player, int id) {
-        if (id < 0) {
-            int ordinal = -(id + 1);
-            CookingMenuButton craftingMenuButton = CookingMenuButton.values()[ordinal];
-            switch (craftingMenuButton) {
-                case TOGGLE_NBT_SAVE -> data.set(DATA_SAVE_NBT,1-data.get(1));
-            }
-            return true;
-        } else {
-            return super.clickMenuButton(player, id);
-        }
-    }
-
-    public boolean saveNBT() {
-        return data.get(DATA_SAVE_NBT) > 0;
     }
 
     @Override

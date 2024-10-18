@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +22,7 @@ import java.io.FileWriter;
 
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
+    public static final int DATA_SAVE_NBT = 0;
 
     public final SimpleContainer craftingInventory;
     protected final ContainerData data;
@@ -50,6 +49,10 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         for (i = 0; i < 9; ++i) {
             this.addSlot(new Slot(inventory, i, 8 + i * 18, 142 + yPos));
         }
+    }
+
+    public boolean saveNBT() {
+        return data.get(DATA_SAVE_NBT) > 0;
     }
 
     @Override
