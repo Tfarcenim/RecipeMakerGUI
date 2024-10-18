@@ -8,14 +8,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import tfar.recipemakergui.menu.GlobalMenuButton;
 import tfar.recipemakergui.menu.RecipeMakerMenu;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends AbstractContainerScreen<RMM> {
     private DetailsList list;
@@ -33,7 +28,7 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
     }
 
     public void initList() {
-        this.list = new DetailsList(0,78);
+        this.list = new DetailsList(0,imageHeight);
         list.setRenderBackground(false);
         list.setLeftPos(leftPos - 24);
         list.setRenderTopAndBottom(false);
@@ -68,21 +63,16 @@ public abstract class RecipeMakerScreen<RMM extends RecipeMakerMenu> extends Abs
         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, action.ordinal());
     }
 
-    static final Map<Item, GlobalMenuButton> map = new HashMap<>();
-
-    static {
-        map.put(Items.CRAFTING_TABLE, GlobalMenuButton.CRAFTING);
-        map.put(Items.FURNACE, GlobalMenuButton.FURNACE);
-    }
 
     protected class DetailsList extends ObjectSelectionList<DetailsList.Entry> {
 
         public DetailsList(int yPos, int height) {
             super(RecipeMakerScreen.this.minecraft, 24, imageHeight, topPos +yPos,topPos +yPos + height, 18);
 
-            for (Map.Entry<Item, GlobalMenuButton> predicate : map.entrySet()) {
-                Item s = predicate.getKey();
-                    this.addEntry(new Entry(s.getDefaultInstance(),predicate.getValue()));
+            for (GlobalMenuButton globalMenuButton : GlobalMenuButton.values()) {
+                if (globalMenuButton.isStation()) {
+                    this.addEntry(new Entry(globalMenuButton.item.getDefaultInstance(), globalMenuButton));
+                }
             }
         }
 

@@ -1,5 +1,5 @@
 package tfar.recipemakergui.menu;
 
-public enum FurnaceMenuButton {
+public enum CookingMenuButton {
     TOGGLE_NBT_SAVE;
 }

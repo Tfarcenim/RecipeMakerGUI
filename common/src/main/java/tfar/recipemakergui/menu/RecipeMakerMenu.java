@@ -24,29 +24,30 @@ import java.io.FileWriter;
 
 public abstract class RecipeMakerMenu extends AbstractContainerMenu {
 
+
     public final SimpleContainer craftingInventory;
     protected final ContainerData data;
 
-    protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory,SimpleContainer craftingInventory,ContainerData data) {
+    protected RecipeMakerMenu(@Nullable MenuType<?> type, int id, Inventory inventory, SimpleContainer craftingInventory, ContainerData data) {
         super(type, id);
         this.craftingInventory = craftingInventory;
         addCraftingInventory(craftingInventory);
-        addPlayerInventory(inventory,0);
+        addPlayerInventory(inventory, 0);
         this.data = data;
         addDataSlots(data);
     }
 
     protected abstract void addCraftingInventory(SimpleContainer craftingInventory);
 
-    protected void addPlayerInventory(Inventory inventory,int yPos) {
+    protected void addPlayerInventory(Inventory inventory, int yPos) {
         int i;
-        for(i = 0; i < 3; ++i) {
-            for(int j = 0; j < 9; ++j) {
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18 + yPos));
             }
         }
 
-        for(i = 0; i < 9; ++i) {
+        for (i = 0; i < 9; ++i) {
             this.addSlot(new Slot(inventory, i, 8 + i * 18, 142 + yPos));
         }
     }
@@ -55,35 +56,11 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         if (id >= 0) {
             GlobalMenuButton globalMenuButton = GlobalMenuButton.values()[id];
-            switch (globalMenuButton) {
-                case FURNACE -> {
-                    player.openMenu(new MenuProvider() {
-                        @Override
-                        public Component getDisplayName() {
-                            return Component.literal("Furnace");
-                        }
-
-                        @Override
-                        public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                            return new CookingRecipeMakerMenu(i, inventory);
-                        }
-                    });
-                }
-                case CRAFTING -> {
-                    player.openMenu(new MenuProvider() {
-                        @Override
-                        public Component getDisplayName() {
-                            return Component.literal("Crafting Table");
-                        }
-
-                        @Override
-                        public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                            return new CraftingRecipeMakerMenu(i, inventory);
-                        }
-                    });
-                }
-                case SAVE -> {
-                    saveCurrentRecipe();
+            if (globalMenuButton.isStation()) {
+                player.openMenu(new MakerProvider<>(globalMenuButton.item, (MenuType.MenuSupplier) globalMenuButton.supplier));
+            } else {
+                switch (globalMenuButton) {
+                    case SAVE -> saveCurrentRecipe();
                 }
             }
             return true;
@@ -107,7 +84,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
             int i = 0;
             while (true) {
                 i++;
-                String dupName = defaultName+"_"+i;
+                String dupName = defaultName + "_" + i;
                 if (!RecipeMakerGUI.doesNameExist(dupName)) {
                     return dupName;
                 }
@@ -115,7 +92,6 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         }
         return defaultName;
     }
-
 
 
     @Override
@@ -137,7 +113,7 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         return jsonobject;
     }
 
-    public static JsonObject serializeItemStack(ItemStack stack,boolean saveNBT) {
+    public static JsonObject serializeItemStack(ItemStack stack, boolean saveNBT) {
         JsonObject resultObj = new JsonObject();
         resultObj.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         if (stack.getCount() > 1) {
@@ -149,19 +125,19 @@ public abstract class RecipeMakerMenu extends AbstractContainerMenu {
         return resultObj;
     }
 
-    public void setServerSideDataValue(int index,short value) {
-        data.set(index,value);
+    public void setServerSideDataValue(int index, short value) {
+        data.set(index, value);
     }
 
     public void setServerSideDoubleValue(double value) {
 
     }
 
-    public static void write(JsonObject object,String fileName) {
+    public static void write(JsonObject object, String fileName) {
         Gson gson = new Gson();
         JsonWriter writer = null;
         try {
-            File file = new File("recipemakergui/data/recipemakergui/recipes/"+fileName+".json");
+            File file = new File("recipemakergui/data/recipemakergui/recipes/" + fileName + ".json");
             writer = gson.newJsonWriter(new FileWriter(file));
             writer.setIndent("    ");
             gson.toJson(object, writer);

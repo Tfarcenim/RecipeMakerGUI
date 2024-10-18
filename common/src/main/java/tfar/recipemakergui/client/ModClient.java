@@ -7,6 +7,6 @@ public class ModClient {
 
     public static void screens() {
         MenuScreens.register(ModMenuTypes.CRAFTING_RECIPE_MAKER,CraftingRecipeMakerScreen::new);
-        MenuScreens.register(ModMenuTypes.FURNACE_RECIPE_MAKER_MENU,FurnaceRecipeMakerScreen::new);
+        MenuScreens.register(ModMenuTypes.COOKING_RECIPE_MAKER_MENU, AbstractCookingRecipeMakerScreen::new);
     }
 }

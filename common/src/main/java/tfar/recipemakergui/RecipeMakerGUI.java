@@ -16,10 +16,15 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tfar.recipemakergui.init.ModMenuTypes;
+import tfar.recipemakergui.menu.CookingRecipeMakerMenu;
 import tfar.recipemakergui.menu.CraftingRecipeMakerMenu;
+import tfar.recipemakergui.menu.GlobalMenuButton;
+import tfar.recipemakergui.menu.MakerProvider;
 import tfar.recipemakergui.network.PacketHandler;
 import tfar.recipemakergui.platform.Services;
 
@@ -29,7 +34,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,18 +76,16 @@ public class RecipeMakerGUI {
     static int openGui(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         CommandSourceStack source = ctx.getSource();
         ServerPlayer player = source.getPlayerOrException();
-        player.openMenu(new MenuProvider() {
-            @Override
-            public Component getDisplayName() {
-                return Component.literal("Crafting Table");
-            }
 
-            @Override
-            public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                return new CraftingRecipeMakerMenu(i, inventory);
-            }
-        });
+        openMenuFor(player,GlobalMenuButton.CRAFTING);
         return 1;
+    }
+
+    public static void openMenuFor(ServerPlayer player, GlobalMenuButton button) {
+        MenuType.MenuSupplier supplier = button.supplier;
+        if (supplier != null) {
+            player.openMenu(new MakerProvider<>(button.item,supplier));
+        }
     }
 
     public static ResourceLocation id(String path) {
@@ -124,7 +129,7 @@ public class RecipeMakerGUI {
                 //create folders
                 Files.createDirectories(new File(RecipeMakerGUI.getGameDir().toFile(), RECIPE_PATH).toPath());
                 //create pack.mcmeta
-                URL url = PackConfig.class.getClassLoader().getResource("pack.mcmeta");
+                URL url = RecipeMakerGUI.class.getClassLoader().getResource("pack.mcmeta");
                 Files.copy(url.openStream(), PACK_MCMETA);
             } catch (IOException e) {
                 e.printStackTrace();

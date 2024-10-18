@@ -8,19 +8,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import tfar.recipemakergui.RecipeMakerGUI;
+import tfar.recipemakergui.menu.CookingMenuButton;
 import tfar.recipemakergui.menu.CookingRecipeMakerMenu;
-import tfar.recipemakergui.menu.FurnaceMenuButton;
 import tfar.recipemakergui.network.server.C2SSetDataValuePacket;
 import tfar.recipemakergui.network.server.C2SSetDoubleValuePacket;
 import tfar.recipemakergui.platform.Services;
 
-public class FurnaceRecipeMakerScreen extends RecipeMakerScreen<CookingRecipeMakerMenu> {
+public class AbstractCookingRecipeMakerScreen extends RecipeMakerScreen<CookingRecipeMakerMenu> {
 
-    public FurnaceRecipeMakerScreen(CookingRecipeMakerMenu $$0, Inventory $$1, Component $$2) {
+    public AbstractCookingRecipeMakerScreen(CookingRecipeMakerMenu $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2);
     }
 
-    private static final ResourceLocation CRAFTING_TABLE_LOCATION = RecipeMakerGUI.id("textures/gui/furnace.png");
+    private static final ResourceLocation CRAFTING_TABLE_LOCATION = RecipeMakerGUI.id("textures/gui/cooking.png");
 
     protected EditBox cooktimeBox;
     protected EditBox xpBox;
@@ -37,7 +37,7 @@ public class FurnaceRecipeMakerScreen extends RecipeMakerScreen<CookingRecipeMak
         addRenderableWidget(save);
 
         SmallXButton outputNBT = new SmallXButton(leftPos+159,topPos+20,12,12,Component.literal("x"),button -> {
-            sendButtonToServer(FurnaceMenuButton.TOGGLE_NBT_SAVE);
+            sendButtonToServer(CookingMenuButton.TOGGLE_NBT_SAVE);
         }, menu.saveNBT());
         outputNBT.setTooltip(Tooltip.create(Component.literal("Save Output NBT")));
 
@@ -124,7 +124,7 @@ public class FurnaceRecipeMakerScreen extends RecipeMakerScreen<CookingRecipeMak
         pGuiGraphics.blit(CRAFTING_TABLE_LOCATION, i, j, 0, 0, this.imageWidth, this.imageHeight);
     }
 
-    protected void sendButtonToServer(FurnaceMenuButton action) {
+    protected void sendButtonToServer(CookingMenuButton action) {
         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,-(action.ordinal()+1));
         //negate and subtract one to avoid interference with global values
     }
